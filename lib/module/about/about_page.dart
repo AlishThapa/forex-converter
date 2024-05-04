@@ -23,6 +23,14 @@ class ForexInfoScreen extends StatelessWidget {
               'The Forex Converter is a tool that helps users convert currencies from one to another using real-time exchange rates. It\'s an essential tool for traders and individuals who are dealing with multiple currencies.',
               style: TextStyle(fontSize: 16),
             ),
+            Spacer(),
+            Text(
+              'Made with flutter️ by Alish Thapa',
+              style: TextStyle(
+                fontSize: 14,
+                fontStyle: FontStyle.italic,
+              ),
+            ),
           ],
         ),
       ),

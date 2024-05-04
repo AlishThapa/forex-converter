@@ -56,15 +56,7 @@ class _CurrencyConverterPageState extends State<CurrencyConverterPage> {
       body: Container(
         height: MediaQuery.of(context).size.height,
         width: MediaQuery.of(context).size.width,
-        decoration: const BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage(
-              'assets/forex.jpg',
-            ),
-            fit: BoxFit.fill,
-            colorFilter: ColorFilter.mode(Colors.black87, BlendMode.darken),
-          ),
-        ),
+        decoration: const BoxDecoration(),
         child: BlocBuilder<CurrencyConverterBloc, CurrencyConverterState>(
           builder: (context, state) {
             if (state is CurrencyConverterLoading) {

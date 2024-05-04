@@ -3,4 +3,3 @@ abstract class CurrencyConverterEvent {
 }
 
 class FetchDataEvent extends CurrencyConverterEvent {}
-

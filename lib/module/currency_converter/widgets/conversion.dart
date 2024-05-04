@@ -22,6 +22,26 @@ class _ConvertCurrenciesState extends State<ConvertCurrencies> {
 
   List<String> selectedCurrencies = ['AUD'];
 
+  void convertCurrency() {
+    if (amountController.text.isNotEmpty) {
+      setState(() {
+        for (int index = 0; index < selectedCurrencies.length; index++) {
+          answers[index] = '${convertAny(widget.rates, amountController.text, dropdownValue1, selectedCurrencies[index])} ${selectedCurrencies[index]}';
+        }
+      });
+    } else {
+      setState(() {
+        answers = List.generate(selectedCurrencies.length, (index) => 'Converted Currency');
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please enter amount'),
+        ),
+      );
+    }
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -49,8 +69,9 @@ class _ConvertCurrenciesState extends State<ConvertCurrencies> {
                         onSelected: (String? newValue) {
                           setState(() {
                             dropdownValue1 = newValue!;
-                            country1 = widget.currencies[newValue] ?? 'Unknown Country'; // Update the country name based on the selection
+                            country1 = widget.currencies[newValue] ?? 'Unknown Country';
                           });
+                          convertCurrency();
                         },
                         dropdownMenuEntries: widget.currencies.keys.toList().map<DropdownMenuEntry<String>>((value) {
                           return DropdownMenuEntry<String>(
@@ -122,9 +143,11 @@ class _ConvertCurrenciesState extends State<ConvertCurrencies> {
                               onSelected: (String? newValue) {
                                 setState(() {
                                   selectedCurrencies[index] = newValue!;
-                                  country2 = widget.currencies[newValue] ?? 'Unknown Country'; // Update the country name based on the selection
+                                  country2 = widget.currencies[newValue] ?? 'Unknown Country';
                                   answers[index] = 'Converted Currency';
                                 });
+                                convertCurrency();
+
                               },
                               dropdownMenuEntries: widget.currencies.keys.toList().map<DropdownMenuEntry<String>>((value) {
                                 return DropdownMenuEntry<String>(
@@ -170,34 +193,7 @@ class _ConvertCurrenciesState extends State<ConvertCurrencies> {
               ),
             ),
           ),
-          // Center(
-          //   child: InkWell(
-          //     onTap: () {
-          //       if (amountController.text.isNotEmpty) {
-          //         setState(() {
-          //           for (int index = 0; index < selectedCurrencies.length; index++) {
-          //             answers[index] =
-          //                 '${convertAny(widget.rates, amountController.text, dropdownValue1, selectedCurrencies[index])} ${selectedCurrencies[index]}';
-          //           }
-          //         });
-          //       } else {
-          //         ScaffoldMessenger.of(context).showSnackBar(
-          //           const SnackBar(
-          //             content: Text('Please enter amount'),
-          //           ),
-          //         );
-          //       }
-          //     },
-          //     child: Container(
-          //       padding: const EdgeInsets.all(10),
-          //       decoration: BoxDecoration(
-          //         color: Theme.of(context).primaryColor,
-          //         borderRadius: BorderRadius.circular(10),
-          //       ),
-          //       child: const Text('Convert'),
-          //     ),
-          //   ),
-          // ),
+
           const SizedBox(height: 10),
           Center(
             child: InkWell(
