@@ -47,57 +47,62 @@ class _ConvertCurrenciesState extends State<ConvertCurrencies> {
         mainAxisSize: MainAxisSize.min,
         children: [
           Text('Convert Currency from', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20)),
-          Card(
-            child: Padding(
-              padding: const EdgeInsets.all(8),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      DropdownMenu<String>(
-                        width: 160,
-                        menuHeight: MediaQuery.of(context).size.height * 0.7,
-                        textStyle: const TextStyle(fontSize: 12),
-                        requestFocusOnTap: true,
-                        initialSelection: widget.currencies[dropdownValue1],
-                        onSelected: (String? newValue) {
-                          setState(() {
-                            country1 = newValue!;
-                            dropdownValue1 = widget.currencies.keys.firstWhere((k) => widget.currencies[k] == newValue);
-                          });
+          Container(
+            padding: const EdgeInsets.all(8.0),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.only(bottomLeft: Radius.circular(12), topLeft: Radius.circular(12)),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    DropdownMenu<String>(
+                      width: 160,
+                      menuHeight: MediaQuery.of(context).size.height * 0.7,
+                      textStyle: const TextStyle(fontSize: 12),
+                      requestFocusOnTap: true,
+                      initialSelection: widget.currencies[dropdownValue1],
+                      onSelected: (String? newValue) {
+                        setState(() {
+                          country1 = newValue!;
+                          dropdownValue1 = widget.currencies.keys.firstWhere((k) => widget.currencies[k] == newValue);
+                        });
+                        convertCurrency();
+                      },
+                      dropdownMenuEntries: widget.currencies.values.toList().map<DropdownMenuEntry<String>>((value) {
+                        return DropdownMenuEntry<String>(
+                          value: value,
+                          label: value,
+                        );
+                      }).toList(),
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: TextFormField(
+                        key: const ValueKey('amount'),
+                        onChanged: (value) {
                           convertCurrency();
                         },
-                        dropdownMenuEntries: widget.currencies.values.toList().map<DropdownMenuEntry<String>>((value) {
-                          return DropdownMenuEntry<String>(
-                            value: value,
-                            label: value,
-                          );
-                        }).toList(),
-                      ),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: TextFormField(
-                          key: const ValueKey('amount'),
-                          onChanged: (value) {
-                            convertCurrency();
-                          },
-                          controller: amountController,
-                          decoration: const InputDecoration(
-                            hintText: 'Enter Amount',
-                            hintStyle: TextStyle(),
+                        controller: amountController,
+                        decoration: const InputDecoration(
+                          hintText: 'Enter Amount (E.g. 1)',
+                          hintStyle: TextStyle(
+                            fontSize: 12,
                           ),
-                          keyboardType: TextInputType.number,
-                          inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^\d+(\.\d{0,2})?$'))],
-                          textAlign: TextAlign.end,
+                          contentPadding: EdgeInsets.symmetric(horizontal: 5),
                         ),
+                        keyboardType: TextInputType.number,
+                        inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^\d+(\.\d{0,2})?$'))],
+                        textAlign: TextAlign.end,
                       ),
-                    ],
-                  ),
-                  Text(widget.currencies[dropdownValue1]),
-                ],
-              ),
+                    ),
+                  ],
+                ),
+                Text(widget.currencies[dropdownValue1]),
+              ],
             ),
           ),
           Divider(
@@ -139,51 +144,53 @@ class _ConvertCurrenciesState extends State<ConvertCurrencies> {
                       ),
                     ],
                   ),
-                  child: Card(
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              DropdownMenu<String>(
-                                width: 160,
-                                menuHeight: MediaQuery.of(context).size.height * 0.45,
-                                requestFocusOnTap: true,
-                                initialSelection: widget.currencies[selectedCurrencies[index]],
-                                textStyle: const TextStyle(fontSize: 12),
-                                onSelected: (String? newValue) {
-                                  setState(() {
-                                    selectedCurrencies[index] = widget.currencies.keys.firstWhere((k) => widget.currencies[k] == newValue);
-                                    answers[index] = 'Converted Currency';
-                                  });
-                                  convertCurrency();
-                                },
-                                dropdownMenuEntries: widget.currencies.values.toList().map<DropdownMenuEntry<String>>((value) {
-                                  return DropdownMenuEntry<String>(
-                                    value: value,
-                                    label: value,
-                                  );
-                                }).toList(),
-                              ),
-                              Spacer(),
-                              Text(answers[index] == '' ? 'Converted Currency' : answers[index], style: const TextStyle(fontSize: 12)),
-                              const SizedBox(width: 10),
-                              if (index != 0)
-                                IconButton(
-                                  onPressed: () {
-                                    setState(() {
-                                      selectedCurrencies.removeAt(index);
-                                    });
-                                  },
-                                  icon: const Icon(Icons.delete),
-                                )
-                            ],
-                          ),
-                          Text(widget.currencies[selectedCurrencies[index]]),
-                        ],
+                  child: Container(
+                    padding: const EdgeInsets.all(8.0),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.only(bottomLeft: Radius.circular(12), topLeft: Radius.circular(12)),
+                      border: Border(
+                        right: BorderSide(color: index == 0 ? Colors.transparent : const Color(0xFFFF0000), width: 12),
                       ),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            DropdownMenu<String>(
+                              width: 160,
+                              menuHeight: MediaQuery.of(context).size.height * 0.45,
+                              requestFocusOnTap: true,
+                              initialSelection: widget.currencies[selectedCurrencies[index]],
+                              textStyle: const TextStyle(fontSize: 12),
+                              onSelected: (String? newValue) {
+                                setState(() {
+                                  selectedCurrencies[index] = widget.currencies.keys.firstWhere((k) => widget.currencies[k] == newValue);
+                                  answers[index] = 'Converted Currency';
+                                });
+                                convertCurrency();
+                              },
+                              dropdownMenuEntries: widget.currencies.values.toList().map<DropdownMenuEntry<String>>((value) {
+                                return DropdownMenuEntry<String>(
+                                  value: value,
+                                  label: value,
+                                );
+                              }).toList(),
+                            ),
+                            Spacer(),
+                            Text(answers[index] == '' ? 'Converted Currency' : answers[index], style: const TextStyle(fontSize: 12)),
+                            const SizedBox(width: 10),
+                          ],
+                        ),
+                        Text(
+                          widget.currencies[selectedCurrencies[index]],
+                          maxLines: 2,
+                          style: TextStyle(
+                            fontSize: 12,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 );
