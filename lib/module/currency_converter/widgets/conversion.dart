@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 
 import '../bloc/currency_converter_bloc.dart';
 
@@ -17,7 +19,7 @@ class _ConvertCurrenciesState extends State<ConvertCurrencies> {
   String dropdownValue1 = 'AUD';
   String country1 = 'Australian Dollar';
   String dropdownValue2 = 'AUD';
-  String country2 = 'Australian Dollar';
+
   List<String> answers = ['Converted Currency'];
 
   List<String> selectedCurrencies = ['AUD'];
@@ -33,14 +35,8 @@ class _ConvertCurrenciesState extends State<ConvertCurrencies> {
       setState(() {
         answers = List.generate(selectedCurrencies.length, (index) => 'Converted Currency');
       });
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please enter amount'),
-        ),
-      );
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -50,7 +46,7 @@ class _ConvertCurrenciesState extends State<ConvertCurrencies> {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text('Convert Currency from', style: TextStyle(color: Colors.white)),
+          Text('Convert Currency from', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20)),
           Card(
             child: Padding(
               padding: const EdgeInsets.all(8),
@@ -61,19 +57,19 @@ class _ConvertCurrenciesState extends State<ConvertCurrencies> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       DropdownMenu<String>(
-                        width: 100,
+                        width: 160,
                         menuHeight: MediaQuery.of(context).size.height * 0.7,
                         textStyle: const TextStyle(fontSize: 12),
                         requestFocusOnTap: true,
-                        initialSelection: dropdownValue1,
+                        initialSelection: widget.currencies[dropdownValue1],
                         onSelected: (String? newValue) {
                           setState(() {
-                            dropdownValue1 = newValue!;
-                            country1 = widget.currencies[newValue] ?? 'Unknown Country';
+                            country1 = newValue!;
+                            dropdownValue1 = widget.currencies.keys.firstWhere((k) => widget.currencies[k] == newValue);
                           });
                           convertCurrency();
                         },
-                        dropdownMenuEntries: widget.currencies.keys.toList().map<DropdownMenuEntry<String>>((value) {
+                        dropdownMenuEntries: widget.currencies.values.toList().map<DropdownMenuEntry<String>>((value) {
                           return DropdownMenuEntry<String>(
                             value: value,
                             label: value,
@@ -85,30 +81,21 @@ class _ConvertCurrenciesState extends State<ConvertCurrencies> {
                         child: TextFormField(
                           key: const ValueKey('amount'),
                           onChanged: (value) {
-                            if (amountController.text.isNotEmpty) {
-                              setState(() {
-                                for (int index = 0; index < selectedCurrencies.length; index++) {
-                                  answers[index] =
-                                      '${convertAny(widget.rates, amountController.text, dropdownValue1, selectedCurrencies[index])} ${selectedCurrencies[index]}';
-                                }
-                              });
-                            } else {
-                              answers = List.generate(selectedCurrencies.length, (index) => 'Converted Currency');
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text('Please enter amount'),
-                                ),
-                              );
-                            }
+                            convertCurrency();
                           },
                           controller: amountController,
-                          decoration: const InputDecoration(hintText: 'Enter Amount'),
+                          decoration: const InputDecoration(
+                            hintText: 'Enter Amount',
+                            hintStyle: TextStyle(),
+                          ),
                           keyboardType: TextInputType.number,
+                          inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^\d+(\.\d{0,2})?$'))],
+                          textAlign: TextAlign.end,
                         ),
                       ),
                     ],
                   ),
-                  Text(country1),
+                  Text(widget.currencies[dropdownValue1]),
                 ],
               ),
             ),
@@ -117,61 +104,86 @@ class _ConvertCurrenciesState extends State<ConvertCurrencies> {
             color: Colors.white,
             thickness: 2,
           ),
-          Text('to', style: TextStyle(color: Colors.white)),
-
+          Text('To', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20)),
           Expanded(
             child: ListView.separated(
               physics: const BouncingScrollPhysics(),
-              separatorBuilder: (BuildContext context, int index) => const SizedBox(height: 20),
+              separatorBuilder: (BuildContext context, int index) => const SizedBox(height: 10),
               shrinkWrap: true,
               itemCount: selectedCurrencies.length,
               itemBuilder: (BuildContext context, int index) {
-                return Card(
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            DropdownMenu<String>(
-                              width: 100,
-                              menuHeight: MediaQuery.of(context).size.height * 0.7,
-                              requestFocusOnTap: true,
-                              initialSelection: selectedCurrencies[index],
-                              textStyle: const TextStyle(fontSize: 12),
-                              onSelected: (String? newValue) {
-                                setState(() {
-                                  selectedCurrencies[index] = newValue!;
-                                  country2 = widget.currencies[newValue] ?? 'Unknown Country';
-                                  answers[index] = 'Converted Currency';
-                                });
-                                convertCurrency();
-
-                              },
-                              dropdownMenuEntries: widget.currencies.keys.toList().map<DropdownMenuEntry<String>>((value) {
-                                return DropdownMenuEntry<String>(
-                                  value: value,
-                                  label: value,
-                                );
-                              }).toList(),
-                            ),
-                            const SizedBox(width: 10),
-                            Text(answers[index] == '' ? 'Converted Currency' : answers[index], style: const TextStyle(fontSize: 12)),
-                            if (index != 0) const Spacer(),
-                            if (index != 0)
-                              IconButton(
-                                onPressed: () {
+                return Slidable(
+                  enabled: index == 0 ? false : true,
+                  key: UniqueKey(),
+                  endActionPane: ActionPane(
+                    dismissible: DismissiblePane(onDismissed: () {
+                      setState(() {
+                        selectedCurrencies.removeAt(index);
+                        answers.removeAt(index);
+                      });
+                    }),
+                    motion: const ScrollMotion(),
+                    children: [
+                      SlidableAction(
+                        flex: 2,
+                        onPressed: (_) {
+                          setState(() {
+                            selectedCurrencies.removeAt(index);
+                            answers.removeAt(index);
+                          });
+                        },
+                        backgroundColor: const Color(0xFFFF0000),
+                        foregroundColor: Colors.white,
+                        icon: Icons.delete,
+                        label: 'Delete',
+                      ),
+                    ],
+                  ),
+                  child: Card(
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              DropdownMenu<String>(
+                                width: 160,
+                                menuHeight: MediaQuery.of(context).size.height * 0.45,
+                                requestFocusOnTap: true,
+                                initialSelection: widget.currencies[selectedCurrencies[index]],
+                                textStyle: const TextStyle(fontSize: 12),
+                                onSelected: (String? newValue) {
                                   setState(() {
-                                    selectedCurrencies.removeAt(index);
+                                    selectedCurrencies[index] = widget.currencies.keys.firstWhere((k) => widget.currencies[k] == newValue);
+                                    answers[index] = 'Converted Currency';
                                   });
+                                  convertCurrency();
                                 },
-                                icon: const Icon(Icons.delete),
-                              )
-                          ],
-                        ),
-                        Text(country2),
-                      ],
+                                dropdownMenuEntries: widget.currencies.values.toList().map<DropdownMenuEntry<String>>((value) {
+                                  return DropdownMenuEntry<String>(
+                                    value: value,
+                                    label: value,
+                                  );
+                                }).toList(),
+                              ),
+                              Spacer(),
+                              Text(answers[index] == '' ? 'Converted Currency' : answers[index], style: const TextStyle(fontSize: 12)),
+                              const SizedBox(width: 10),
+                              if (index != 0)
+                                IconButton(
+                                  onPressed: () {
+                                    setState(() {
+                                      selectedCurrencies.removeAt(index);
+                                    });
+                                  },
+                                  icon: const Icon(Icons.delete),
+                                )
+                            ],
+                          ),
+                          Text(widget.currencies[selectedCurrencies[index]]),
+                        ],
+                      ),
                     ),
                   ),
                 );
@@ -193,7 +205,6 @@ class _ConvertCurrenciesState extends State<ConvertCurrencies> {
               ),
             ),
           ),
-
           const SizedBox(height: 10),
           Center(
             child: InkWell(
