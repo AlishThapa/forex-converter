@@ -39,6 +39,13 @@ class _ConvertCurrenciesState extends State<ConvertCurrencies> {
   }
 
   @override
+  void initState() {
+    amountController.text = '1';
+    convertCurrency();
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(10),
@@ -203,7 +210,7 @@ class _ConvertCurrenciesState extends State<ConvertCurrencies> {
               onPressed: () {
                 setState(() {
                   selectedCurrencies.add('AUD');
-                  answers.add('Converted Currency');
+                  answers.add('${convertAny(widget.rates, amountController.text, dropdownValue1, 'AUD')} AUD');
                 });
               },
               child: Text(
