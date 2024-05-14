@@ -16,13 +16,13 @@ class ConvertCurrencies extends StatefulWidget {
 
 class _ConvertCurrenciesState extends State<ConvertCurrencies> {
   TextEditingController amountController = TextEditingController();
-  String dropdownValue1 = 'AUD';
-  String country1 = 'Australian Dollar';
-  String dropdownValue2 = 'AUD';
+  String dropdownValue1 = 'USD';
+  String country1 = 'United States Dollar';
+  String dropdownValue2 = 'NPR';
 
   List<String> answers = ['Converted Currency'];
 
-  List<String> selectedCurrencies = ['AUD'];
+  List<String> selectedCurrencies = ['NPR'];
 
   void convertCurrency() {
     if (amountController.text.isNotEmpty) {
@@ -46,6 +46,12 @@ class _ConvertCurrenciesState extends State<ConvertCurrencies> {
   }
 
   @override
+  void dispose() {
+    amountController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(10),
@@ -64,10 +70,11 @@ class _ConvertCurrenciesState extends State<ConvertCurrencies> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     DropdownMenu<String>(
-                      width: 160,
+                      width: 180,
                       menuHeight: MediaQuery.of(context).size.height * 0.7,
                       textStyle: const TextStyle(fontSize: 12),
                       requestFocusOnTap: true,
@@ -90,21 +97,28 @@ class _ConvertCurrenciesState extends State<ConvertCurrencies> {
                     Expanded(
                       child: TextFormField(
                         key: const ValueKey('amount'),
+                        controller: amountController,
                         onChanged: (value) {
+                          // amountController.text = value;
                           convertCurrency();
                         },
-                        controller: amountController,
-                        decoration: const InputDecoration(
+                        decoration: InputDecoration(
                           hintText: 'Enter Amount (E.g. 1)',
                           hintStyle: TextStyle(
                             fontSize: 12,
                           ),
-                          contentPadding: EdgeInsets.symmetric(horizontal: 5),
+                          // isDense: true,
+                          // isCollapsed: true,
                         ),
                         keyboardType: TextInputType.number,
                         inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^\d+(\.\d{0,2})?$'))],
                         textAlign: TextAlign.end,
                       ),
+                    ),
+                    SizedBox(width: 5),
+                    Text(
+                      dropdownValue1,
+                      style: TextStyle(fontSize: 16),
                     ),
                   ],
                 ),
@@ -164,9 +178,10 @@ class _ConvertCurrenciesState extends State<ConvertCurrencies> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Row(
+                          crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
                             DropdownMenu<String>(
-                              width: 160,
+                              width: 180,
                               menuHeight: MediaQuery.of(context).size.height * 0.45,
                               requestFocusOnTap: true,
                               initialSelection: widget.currencies[selectedCurrencies[index]],
@@ -186,7 +201,7 @@ class _ConvertCurrenciesState extends State<ConvertCurrencies> {
                               }).toList(),
                             ),
                             Spacer(),
-                            Text(answers[index] == '' ? 'Converted Currency' : answers[index], style: const TextStyle(fontSize: 12)),
+                            Text(answers[index] == '' ? 'Converted Currency' : answers[index], style: const TextStyle(fontSize: 14)),
                             const SizedBox(width: 10),
                           ],
                         ),
@@ -209,8 +224,8 @@ class _ConvertCurrenciesState extends State<ConvertCurrencies> {
             child: TextButton(
               onPressed: () {
                 setState(() {
-                  selectedCurrencies.add('AUD');
-                  answers.add('${convertAny(widget.rates, amountController.text, dropdownValue1, 'AUD')} AUD');
+                  selectedCurrencies.add('NPR');
+                  answers.add('${convertAny(widget.rates, amountController.text, dropdownValue1, 'NPR')} NPR');
                 });
               },
               child: Text(
@@ -224,7 +239,7 @@ class _ConvertCurrenciesState extends State<ConvertCurrencies> {
             child: InkWell(
               onTap: () {
                 setState(() {
-                  amountController.clear();
+                  amountController.text = '';
                   answers = List.generate(selectedCurrencies.length, (index) => 'Converted Currency');
                 });
               },
