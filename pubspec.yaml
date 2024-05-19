@@ -41,6 +41,9 @@ dependencies:
   flutter_native_splash: ^2.4.0
   flutter_slidable: ^3.1.0
   url_launcher: ^6.2.6
+  flutter_svg: ^2.0.10+1
+  connectivity_plus: ^5.0.2
+  internet_connection_checker: ^1.0.0+1
 # to run flutter native splash use this
 # dart run flutter_native_splash:create
 flutter_native_splash:

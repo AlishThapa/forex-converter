@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:flutter_svg/svg.dart';
 
 import '../bloc/currency_converter_bloc.dart';
 
@@ -59,7 +60,6 @@ class _ConvertCurrenciesState extends State<ConvertCurrencies> {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text('Convert Currency from', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20)),
           Container(
             padding: const EdgeInsets.all(8.0),
             decoration: BoxDecoration(
@@ -73,6 +73,7 @@ class _ConvertCurrenciesState extends State<ConvertCurrencies> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
+                    const SizedBox(width: 10),
                     DropdownMenu<String>(
                       width: 180,
                       menuHeight: MediaQuery.of(context).size.height * 0.7,
@@ -118,19 +119,30 @@ class _ConvertCurrenciesState extends State<ConvertCurrencies> {
                     SizedBox(width: 5),
                     Text(
                       dropdownValue1,
-                      style: TextStyle(fontSize: 16),
+                      maxLines: 2,
+                      style: TextStyle(
+                        fontSize: 12,
+                      ),
                     ),
+                    const SizedBox(width: 20),
                   ],
                 ),
-                Text(widget.currencies[dropdownValue1]),
+                Padding(
+                  padding: const EdgeInsets.only(left: 10),
+                  child: Text(widget.currencies[dropdownValue1]),
+                ),
               ],
             ),
           ),
-          Divider(
-            color: Colors.white,
-            thickness: 2,
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 10),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                SvgPicture.asset('assets/convert.svg', height: 30),
+              ],
+            ),
           ),
-          Text('To', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20)),
           Expanded(
             child: ListView.separated(
               physics: const BouncingScrollPhysics(),
@@ -180,6 +192,7 @@ class _ConvertCurrenciesState extends State<ConvertCurrencies> {
                         Row(
                           crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
+                            const SizedBox(width: 10),
                             DropdownMenu<String>(
                               width: 180,
                               menuHeight: MediaQuery.of(context).size.height * 0.45,
@@ -205,11 +218,14 @@ class _ConvertCurrenciesState extends State<ConvertCurrencies> {
                             const SizedBox(width: 10),
                           ],
                         ),
-                        Text(
-                          widget.currencies[selectedCurrencies[index]],
-                          maxLines: 2,
-                          style: TextStyle(
-                            fontSize: 12,
+                        Padding(
+                          padding: const EdgeInsets.only(left: 10),
+                          child: Text(
+                            widget.currencies[selectedCurrencies[index]],
+                            maxLines: 2,
+                            style: TextStyle(
+                              fontSize: 12,
+                            ),
                           ),
                         ),
                       ],
@@ -244,7 +260,7 @@ class _ConvertCurrenciesState extends State<ConvertCurrencies> {
                 });
               },
               child: Container(
-                padding: const EdgeInsets.all(10),
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
                 decoration: BoxDecoration(
                   color: Theme.of(context).primaryColor,
                   borderRadius: BorderRadius.circular(10),

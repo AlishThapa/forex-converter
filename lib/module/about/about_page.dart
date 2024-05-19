@@ -16,8 +16,19 @@ class ForexInfoScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Color(0xff17202A),
       appBar: AppBar(
-        title: const Text('About Forex Converter'),
+        backgroundColor: Color(0xff17202A),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+        title: const Text(
+          'About Forex Converter',
+          style: TextStyle(color: Colors.white),
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -26,12 +37,19 @@ class ForexInfoScreen extends StatelessWidget {
           children: <Widget>[
             const Text(
               'Forex Converter Overview',
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
             ),
             const SizedBox(height: 10),
             const Text(
               'The Forex Converter is a tool that helps users convert currencies from one to another using real-time exchange rates. It\'s an essential tool for traders and individuals who are dealing with multiple currencies.',
-              style: TextStyle(fontSize: 16),
+              style: TextStyle(
+                fontSize: 16,
+                color: Colors.white,
+              ),
             ),
             Spacer(),
             Row(
@@ -42,6 +60,7 @@ class ForexInfoScreen extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 14,
                     fontStyle: FontStyle.italic,
+                    color: Colors.white,
                   ),
                 ),
                 TextButton(
@@ -52,6 +71,7 @@ class ForexInfoScreen extends StatelessWidget {
                     'Alish Thapa',
                     style: TextStyle(
                       fontSize: 14,
+                      color: Colors.white,
                     ),
                   ),
                 ),
