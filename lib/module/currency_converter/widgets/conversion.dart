@@ -21,7 +21,7 @@ class _ConvertCurrenciesState extends State<ConvertCurrencies> {
   String country1 = 'United States Dollar';
   String dropdownValue2 = 'NPR';
 
-  List<String> answers = ['Converted Currency'];
+  List<String> answers = ['0.0'];
 
   List<String> selectedCurrencies = ['NPR'];
 
@@ -34,7 +34,8 @@ class _ConvertCurrenciesState extends State<ConvertCurrencies> {
       });
     } else {
       setState(() {
-        answers = List.generate(selectedCurrencies.length, (index) => 'Converted Currency');
+        amountController.text = '0';
+        answers = List.generate(selectedCurrencies.length, (index) => '0');
       });
     }
   }
@@ -73,26 +74,29 @@ class _ConvertCurrenciesState extends State<ConvertCurrencies> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    const SizedBox(width: 10),
-                    DropdownMenu<String>(
-                      width: 180,
-                      menuHeight: MediaQuery.of(context).size.height * 0.7,
-                      textStyle: const TextStyle(fontSize: 12),
-                      requestFocusOnTap: true,
-                      initialSelection: widget.currencies[dropdownValue1],
-                      onSelected: (String? newValue) {
-                        setState(() {
-                          country1 = newValue!;
-                          dropdownValue1 = widget.currencies.keys.firstWhere((k) => widget.currencies[k] == newValue);
-                        });
-                        convertCurrency();
-                      },
-                      dropdownMenuEntries: widget.currencies.values.toList().map<DropdownMenuEntry<String>>((value) {
-                        return DropdownMenuEntry<String>(
-                          value: value,
-                          label: value,
-                        );
-                      }).toList(),
+                    FocusScope(
+                      node: FocusScopeNode(),
+                      child: DropdownMenu<String>(
+                        width: 160,
+                        menuHeight: MediaQuery.of(context).size.height * 0.7,
+                        textStyle: const TextStyle(fontSize: 10),
+                        requestFocusOnTap: true,
+                        enableSearch: true,
+                        initialSelection: widget.currencies[dropdownValue1],
+                        onSelected: (String? newValue) {
+                          setState(() {
+                            country1 = newValue!;
+                            dropdownValue1 = widget.currencies.keys.firstWhere((k) => widget.currencies[k] == newValue);
+                          });
+                          convertCurrency();
+                        },
+                        dropdownMenuEntries: widget.currencies.values.toList().map<DropdownMenuEntry<String>>((value) {
+                          return DropdownMenuEntry<String>(
+                            value: value,
+                            label: value,
+                          );
+                        }).toList(),
+                      ),
                     ),
                     const SizedBox(width: 10),
                     Expanded(
@@ -100,16 +104,22 @@ class _ConvertCurrenciesState extends State<ConvertCurrencies> {
                         key: const ValueKey('amount'),
                         controller: amountController,
                         onChanged: (value) {
-                          // amountController.text = value;
+                          // Trim leading zeros from the entered value
+                          value = value.replaceFirst(RegExp(r'^0+(?!$)'), '');
+
+                          // Update the text field with the trimmed value
+                          amountController.value = amountController.value.copyWith(
+                            text: value,
+                            selection: TextSelection.collapsed(offset: value.length),
+                          );
+
+                          // Call convertCurrency method
                           convertCurrency();
                         },
                         decoration: InputDecoration(
-                          hintText: 'Enter Amount (E.g. 1)',
                           hintStyle: TextStyle(
                             fontSize: 12,
                           ),
-                          // isDense: true,
-                          // isCollapsed: true,
                         ),
                         keyboardType: TextInputType.number,
                         inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^\d+(\.\d{0,2})?$'))],
@@ -129,7 +139,12 @@ class _ConvertCurrenciesState extends State<ConvertCurrencies> {
                 ),
                 Padding(
                   padding: const EdgeInsets.only(left: 10),
-                  child: Text(widget.currencies[dropdownValue1]),
+                  child: Text(
+                    widget.currencies[dropdownValue1],
+                    style: TextStyle(
+                      fontSize: 12,
+                    ),
+                  ),
                 ),
               ],
             ),
@@ -192,17 +207,16 @@ class _ConvertCurrenciesState extends State<ConvertCurrencies> {
                         Row(
                           crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
-                            const SizedBox(width: 10),
                             DropdownMenu<String>(
-                              width: 180,
+                              width: 160,
                               menuHeight: MediaQuery.of(context).size.height * 0.45,
                               requestFocusOnTap: true,
                               initialSelection: widget.currencies[selectedCurrencies[index]],
-                              textStyle: const TextStyle(fontSize: 12),
+                              textStyle: const TextStyle(fontSize: 10),
                               onSelected: (String? newValue) {
                                 setState(() {
                                   selectedCurrencies[index] = widget.currencies.keys.firstWhere((k) => widget.currencies[k] == newValue);
-                                  answers[index] = 'Converted Currency';
+                                  answers[index] = '0';
                                 });
                                 convertCurrency();
                               },
@@ -213,8 +227,15 @@ class _ConvertCurrenciesState extends State<ConvertCurrencies> {
                                 );
                               }).toList(),
                             ),
-                            Spacer(),
-                            Text(answers[index] == '' ? 'Converted Currency' : answers[index], style: const TextStyle(fontSize: 14)),
+                            Expanded(
+                              child: Text(
+                                answers[index] == '' ? '0' : answers[index],
+                                style: const TextStyle(fontSize: 14),
+                                overflow: TextOverflow.clip,
+                                textAlign: TextAlign.end,
+                                maxLines: 1,
+                              ),
+                            ),
                             const SizedBox(width: 10),
                           ],
                         ),
@@ -256,7 +277,7 @@ class _ConvertCurrenciesState extends State<ConvertCurrencies> {
               onTap: () {
                 setState(() {
                   amountController.text = '';
-                  answers = List.generate(selectedCurrencies.length, (index) => 'Converted Currency');
+                  answers = List.generate(selectedCurrencies.length, (index) => '0');
                 });
               },
               child: Container(

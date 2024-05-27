@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:forex_converter_app/module/currency_converter/currency_converter.dart';
+import 'package:forex_converter_app/module/currency_converter/database/database_helper.dart';
 import 'module/currency_converter/bloc/currency_converter_bloc.dart';
 
 void main() {
