@@ -38,8 +38,6 @@ class CurrencyConverterBloc
       emit(CurrencyConverterLoading());
       final localRates = await _databaseHelper.getLatestRatesFromLocalDb();
       final localCurrencies = await _databaseHelper.getCurrenciesFromLocalDb();
-
-      /// Check for network connection
       if (connectivityResult == ConnectivityResult.none) {
         emit(CurrencyConverterLoaded(
           ratesModel: localRates ?? RatesModel(
@@ -52,11 +50,9 @@ class CurrencyConverterBloc
           currencies: localCurrencies ?? {},
         ));
       } else {
-        /// Always fetch from network if connected
+      
         final ratesModel = await _fetchLatestRates();
         final currencies = await _fetchCurrencies();
-
-        // Save latest rates to local database
         await _databaseHelper.insertRatesToLocalDb(ratesModel);
         await _databaseHelper.insertCurrenciesToLocalDb(currencies);
 
